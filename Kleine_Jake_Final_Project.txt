@@ -1,0 +1,93 @@
+Jake Kleine
+
+This function, when run from the console at http://www.touchcommerce.com/about-us/history will show an alert if
+
+1) The fields in the contact us form are completed within 1 Minute
+2) The user does not take more than 20 seconds between starting a form field and moving onto the next
+3) The values for each field are 
+First Name: John or Jane
+Last Name: Doe
+Email: test@test.com
+Company: Company
+Country: United States
+
+The alert will simply display the input values.
+
+
+
+function addAlert(){
+var firstField = true,underOneMinute = true, noLags = true,  //initialize boolean trackers
+	firstName = false, lastName = false, emailAddress = false, companyName = false, 
+	countryName = false,alertShown = false;
+var shortLag, longLag;			//timeout variables
+
+//Collect inputs to add event handlers
+var inputs = document.getElementsByClassName("signUpForDownload sectionContainer")[0].querySelectorAll("input");
+var inCountry = document.getElementById("country");
+
+//Add event handlers for Focus and Change_input
+for (var i=0;i<inputs.length;i++){
+	inputs[i].addEventListener("focus",onFocus);
+	inputs[i].addEventListener("change", function(){ onChange(this)});
+		};
+inCountry.addEventListener("focus",onFocus);
+inCountry.addEventListener("change", function(){ onChange(this)});
+
+function onFocus() {
+//sets timeout events
+ 	if (firstField) {
+			firstField = false;
+			longLag = setTimeout(function() {underOneMinute=false;}, 60000);
+			}
+	shortLag = setTimeout(function() {noLags = false;},20000);
+	}		
+
+function onChange(myObject) {
+//function-handles input change event; stores values and removes event listener when values match
+//		  -resets timeout event
+//args: myObject, html element object
+	switch (myObject.name) {
+		case "firstName":
+			if (myObject.value == "John" || myObject.value == "Jane"){
+				firstName = myObject.value;
+				myObject.removeEventListener("focus",onFocus);}
+			else firstName = false;
+			break;
+		case "lastName":
+			if (myObject.value == "Doe"){
+				lastName = myObject.value;
+				myObject.removeEventListener("focus",onFocus);}
+			else lastName = false;
+			break;
+		case "emailAddress":
+			if (myObject.value == "test@test.com"){
+				emailAddress = myObject.value;
+				myObject.removeEventListener("focus",onFocus);}
+			else emailAddress = false;
+			break;
+		case "companyName":
+			if (myObject.value == "Company"){
+				companyName = myObject.value;
+				myObject.removeEventListener("focus",onFocus);}
+			else companyName = false;
+			break;
+		case "country":
+			if (myObject.value == "United States"){
+				countryName = myObject.value;
+				myObject.removeEventListener("focus",onFocus);}
+			else companyName = false;
+			break;
+			}
+	clearTimeout(shortLag);
+	//if (all fields match,within time limits, and first alert), send alert and clear timeouts		
+	if (!alertShown && underOneMinute && noLags && firstName && lastName && 
+		emailAddress && companyName && countryName) {
+		alert('First:  '+ firstName + '  Last:  ' + lastName + '\n' +
+			'Email:  ' + emailAddress + '\n' + 'Company:  ' + companyName + '\n'+
+			'Country:  ' + countryName);
+		alertShown = true;
+		clearTimeout(longLag);
+		}
+	else;
+	}
+}
